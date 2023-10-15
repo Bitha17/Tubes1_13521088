@@ -1,3 +1,3 @@
 interface Bot {
-    public abstract int[] move(String[][] gameState);
+    int[] move(String[][] gameState);
 }
