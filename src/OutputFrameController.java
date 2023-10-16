@@ -357,6 +357,7 @@ public class OutputFrameController {
     }
 
     private void moveBot() {
+        if (roundsLeft == 0 && isBotFirst) return;
         int[] botMove = this.bot.move(getGameState());
         int i = botMove[0];
         int j = botMove[1];
