@@ -1,6 +1,10 @@
 abstract class Bot {
     protected String[][] gameState;
     protected abstract int[] move(String[][] gameState);
+
+    protected float objectiveFunction(int[] addedMark){
+        return objectiveFunction(addedMark, "O");
+    }
     protected float objectiveFunction(int[] addedMark, String player){
         // contoh simple objective func
         float val = 0;

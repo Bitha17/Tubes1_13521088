@@ -17,7 +17,7 @@ class LocalSearchBot extends Bot{
                 return current;
             }
             int[] next = getRandomAction();
-            float delta = objectiveFunction(next, "O") - objectiveFunction(current, "O");
+            float delta = objectiveFunction(next) - objectiveFunction(current);
 
             if (delta >= 0) current = next;
             else {
