@@ -80,7 +80,7 @@ public class OutputFrameController {
         if (botAlgorithm == "Local Search"){
             this.bot = new LocalSearchBot();
         } else {
-            this.bot = new MinMaxBot();
+            this.bot = new MiniMaxBot();
         }
         this.playerXTurn = !isBotFirst;
         if (this.isBotFirst) {
@@ -358,7 +358,7 @@ public class OutputFrameController {
 
     private void moveBot() {
         if (roundsLeft == 0 && isBotFirst) return;
-        int[] botMove = this.bot.move(getGameState());
+        int[] botMove = this.bot.move(getGameState(), roundsLeft);
         int i = botMove[0];
         int j = botMove[1];
 

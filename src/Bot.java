@@ -1,10 +1,12 @@
 abstract class Bot {
     protected String[][] gameState;
-    protected abstract int[] move(String[][] gameState);
+    protected int roundsLeft;
+    protected abstract int[] move(String[][] gameState, int roundsLeft);
 
     protected float objectiveFunction(int[] addedMark){
         return objectiveFunction(addedMark, "O");
     }
+
     protected float objectiveFunction(int[] addedMark, String player){
         float val = 0;
         String enemy = player == "X"? "O" : "X";
@@ -31,6 +33,17 @@ abstract class Bot {
             }
         }
 
+        return val;
+    }
+
+    protected float objectiveFunction(String player){
+        float val = 0;
+        String[][] tempState = this.gameState;
+        for (int i=0; i<8; i++) {
+            for (int j=0; j<8; j++) {
+                val += k(tempState[i][j], player)*a(tempState[i][j], getNeighbors(tempState, i, j), player);
+            }
+        }
         return val;
     }
 
