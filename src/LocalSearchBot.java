@@ -5,27 +5,19 @@ class LocalSearchBot extends Bot{
         return localSearch();
     }
 
-    private int[] localSearch() {
-        int[] current = getRandomAction();
-        int t = 0;
-        float temperature;
-        while (true) {
-            t++;
-            temperature = schedule(t);
-            if (temperature == 0){
-                System.out.println(objectiveFunction(current,"O"));
-                return current;
-            }
-            int[] next = getRandomAction();
-            float delta = objectiveFunction(next) - objectiveFunction(current);
-
-            if (delta >= 0) current = next;
-            else {
-                if (Math.exp(delta/temperature)>0.9){
-                    current = next;
-                }
-            }
-        }
+    private long TIMEOUT = 5 * 1000000000;
+    private int[] localSearch(){
+         int[] current = getRandomAction();
+         int nMax = 0;
+         long startTime = System.nanoTime();
+         while (nMax<=200 && System.nanoTime() - startTime < TIMEOUT){
+             int[] neighbor = getRandomAction();
+             if (objectiveFunction(neighbor) > objectiveFunction(current)){
+                 current = neighbor;
+             }
+             nMax++;
+         }
+        return current;
     }
 
     private int[] getRandomAction(){
