@@ -1,5 +1,4 @@
-class LocalSearchBot implements Bot{
-    private String[][] gameState;
+class LocalSearchBot extends Bot{
     @Override
     public int[] move(String[][] gameState) {
         this.gameState = gameState;
@@ -41,27 +40,4 @@ class LocalSearchBot implements Bot{
     private float schedule(int t){
         return 100-t/15;
     }
-
-    private float objectiveFunction(int[] addedMark, String player){
-        // contoh simple objective func
-        float val = 0;
-        String enemy = player == "X"? "O" : "X";
-        int x = addedMark[0];
-        int y = addedMark[1];
-
-        if (x!=0 && gameState[x-1][y] == enemy){
-            val++;
-        }
-        if (x!=7 && gameState[x+1][y] == enemy){
-            val++;
-        }
-        if (y!=0 && gameState[x][y-1] == enemy){
-            val++;
-        }
-        if (y!=7 && gameState[x][y+1] == enemy){
-            val++;
-        }
-        return val;
-    };
-
 }

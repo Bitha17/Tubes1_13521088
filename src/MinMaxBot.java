@@ -1,4 +1,4 @@
-class MinMaxBot implements Bot{
+class MinMaxBot extends Bot{
 
     @Override
     public int[] move(String[][] gameState) {
