@@ -56,10 +56,12 @@ abstract class Bot {
         int emptyCount = 0;
     
         for (String neighbor : neighbors) {
-            if (neighbor.equals("")) {
-                emptyCount++;
-            } else if (neighbor.equals(player)) {
-                playerCount++;
+            if (neighbor != null) {
+                if (neighbor.equals("")) {
+                    emptyCount++;
+                } else if (neighbor.equals(player)) {
+                    playerCount++;
+                }
             }
         }
     
