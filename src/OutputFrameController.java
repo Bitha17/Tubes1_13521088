@@ -50,7 +50,9 @@ public class OutputFrameController {
     private int playerOScore;
     private int roundsLeft;
     private boolean isBotFirst;
-    private Bot bot;
+    private Bot botX;
+    private Bot botO;
+    private String modeX;
 
 
     private static final int ROW = 8;
@@ -69,27 +71,46 @@ public class OutputFrameController {
      * @param isBotFirst True if bot is first, false otherwise.
      *
      */
-    void getInput(String name1, String name2, String rounds, boolean isBotFirst, String botAlgorithm){
+    void getInput(String name1, String name2, String rounds, boolean isBotFirst, String modeX, String modeO){
         this.playerXName.setText(name1);
         this.playerOName.setText(name2);
         this.roundsLeftLabel.setText(rounds);
         this.roundsLeft = Integer.parseInt(rounds);
         this.isBotFirst = isBotFirst;
+        this.modeX = modeX;
 
         // Start bot
-        if (botAlgorithm == "Local Search"){
-            this.bot = new LocalSearchBot("O");
-        } else if (botAlgorithm == "Genetic Algorithm"){
-            this.bot = new GeneticAlgorithmBot("O");
-        } else {
-            this.bot = new MiniMaxBot("O");
+        if (modeO== "Local Search Bot"){
+            this.botO = new LocalSearchBot("O");
+        } else if (modeO == "Genetic Algorithm Bot"){
+            this.botO = new GeneticAlgorithmBot("O");
+        } else if (modeO == "Min-Max Bot"){
+            this.botO = new MiniMaxBot("O");
         }
-        this.playerXTurn = !isBotFirst;
-        if (this.isBotFirst) {
-            this.moveBot();
+
+        if(modeX == "Player"){
+            this.playerXTurn = !isBotFirst;
+            if (this.isBotFirst) {
+                this.moveBot("O");
+            }
+        } else {
+            if (modeX == "Local Search Bot"){
+                this.botX = new LocalSearchBot("X");
+            } else if (modeX == "Genetic Algorithm Bot"){
+                this.botX = new GeneticAlgorithmBot("X");
+            } else if (modeX == "Min-Max Bot"){
+                this.botX = new MiniMaxBot("X");
+            }
+
+            this.playerXTurn = !isBotFirst;
+            if (this.playerXTurn) {
+                this.moveBot("X");
+            } else {
+                this.moveBot("O");
+            }
+
         }
     }
-
 
 
     /**
@@ -203,7 +224,7 @@ public class OutputFrameController {
                 }
 
                 // Bot's turn
-                this.moveBot();
+                this.moveBot("O");
             }
             else {
                 this.playerXBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
@@ -358,9 +379,11 @@ public class OutputFrameController {
         primaryStage.show();
     }
 
-    private void moveBot() {
-        if (roundsLeft == 0 && isBotFirst) return;
-        int[] botMove = this.bot.move(getGameState(), roundsLeft);
+
+
+    private void moveBot(String player) {
+        if (roundsLeft == 0) return;
+        int[] botMove = player == "X"? this.botX.move(getGameState(), roundsLeft): this.botO.move(getGameState(), roundsLeft);
         int i = botMove[0];
         int j = botMove[1];
 
@@ -371,6 +394,9 @@ public class OutputFrameController {
         }
 
         this.selectedCoordinates(i, j);
+        if (this.modeX != "Player"){
+            moveBot(player=="X"? "O":"X");
+        }
     }
 
     public String[][] getGameState(){

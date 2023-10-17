@@ -6,6 +6,7 @@ public class MiniMaxBot extends Bot{
     }
     @Override
     public int[] move(String[][] gameState, int roundsLeft) {
+        System.out.println("minimax");
         this.gameState = gameState;
         this.roundsLeft = roundsLeft;
         return miniMax();
@@ -23,7 +24,6 @@ public class MiniMaxBot extends Bot{
         bestAction = actions[0];
         for (int i = 0; i < actions.length; i++) {
             if(System.nanoTime() - startTime >= TIMEOUT) return bestAction;
-            System.out.println(actions[i][0] + " " + actions[i][1]);
             String[][] result = result(this.gameState, actions[i], player);
             float value = minValue(result, alpha, beta);
             if (value > bestValue) {

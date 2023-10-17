@@ -14,7 +14,7 @@ class LocalSearchBot extends Bot{
          int[] current = getRandomAction();
          int nMax = 0;
          long startTime = System.nanoTime();
-         while (nMax<=200 && System.nanoTime() - startTime < TIMEOUT){
+         while (nMax<=64 && System.nanoTime() - startTime < TIMEOUT){
              int[] neighbor = getRandomAction();
              if (objectiveFunction(neighbor) > objectiveFunction(current)){
                  current = neighbor;
@@ -33,7 +33,5 @@ class LocalSearchBot extends Bot{
         return newAction;
     }
 
-    private float schedule(int t){
-        return 100-t/15;
-    }
+
 }

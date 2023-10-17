@@ -33,7 +33,11 @@ public class InputFrameController{
     private ComboBox<String> numberOfRounds;
 
     @FXML
-    private ComboBox<String> botAlgorithm;
+    private ComboBox<String> modeX;
+    @FXML
+    private ComboBox<String> modeO;
+
+
 
 
 
@@ -51,10 +55,15 @@ public class InputFrameController{
         this.numberOfRounds.setItems(numberOfRoundsDropdown);
         this.numberOfRounds.getSelectionModel().select(0);
 
-        ObservableList<String> botAlgorithmDropdown = FXCollections.observableArrayList(
-                "","Min-Max Algorithm", "Local Search", "Genetic Algorithm");
-        this.botAlgorithm.setItems(botAlgorithmDropdown);
-        this.botAlgorithm.getSelectionModel().select(0);
+        ObservableList<String> mode1Dropdown = FXCollections.observableArrayList(
+                "","Player","Min-Max Bot", "Local Search Bot", "Genetic Algorithm Bot");
+        this.modeX.setItems(mode1Dropdown);
+        this.modeX.getSelectionModel().select(0);
+
+        ObservableList<String> mode2Dropdown = FXCollections.observableArrayList(
+                "","Min-Max Bot", "Local Search Bot", "Genetic Algorithm Bot");
+        this.modeO.setItems(mode2Dropdown);
+        this.modeO.getSelectionModel().select(0);
 
     }
 
@@ -69,7 +78,8 @@ public class InputFrameController{
         this.player1.setText("");
         this.player2.setText("");
         this.numberOfRounds.getSelectionModel().select(0);
-        this.botAlgorithm.getSelectionModel().select(0);
+        this.modeX.getSelectionModel().select(0);
+        this.modeO.getSelectionModel().select(0);
     }
 
 
@@ -92,7 +102,7 @@ public class InputFrameController{
 
             // Get controller of output frame and pass input including player names and number of rounds chosen.
             OutputFrameController outputFC = loader.getController();
-            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.isBotFirst.isSelected(), this.botAlgorithm.getValue());
+            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.isBotFirst.isSelected(), this.modeX.getValue(), this.modeO.getValue());
 
             // Open the new frame.
             Stage secondaryStage = new Stage();
@@ -114,7 +124,8 @@ public class InputFrameController{
         String playerX = this.player1.getText();
         String playerO = this.player2.getText();
         String roundNumber = this.numberOfRounds.getValue();
-        String botAlgorithm = this.botAlgorithm.getValue();
+        String mode1 = this.modeX.getValue();
+        String mode2 = this.modeO.getValue();
 
         if (playerX.length() == 0) {
             new Alert(Alert.AlertType.ERROR, "Player 1 name is blank.").showAndWait();
@@ -136,7 +147,12 @@ public class InputFrameController{
             return false;
         }
 
-        if (botAlgorithm.length() == 0){
+        if (mode1.length() == 0){
+            new Alert(Alert.AlertType.ERROR, "Bot Algorithm dropdown menu is blank.").showAndWait();
+            return false;
+        }
+
+        if (mode2.length() == 0){
             new Alert(Alert.AlertType.ERROR, "Bot Algorithm dropdown menu is blank.").showAndWait();
             return false;
         }

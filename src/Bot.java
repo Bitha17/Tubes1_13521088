@@ -16,9 +16,9 @@ abstract class Bot {
 
     protected float objectiveFunction(int[] addedMark, String player){
         float val = 0;
-        String enemy = player == "X"? "O" : "X";
         int x = addedMark[0];
         int y = addedMark[1];
+
         String[][] tempState = new String[8][8];
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -26,7 +26,6 @@ abstract class Bot {
             }
         }
         tempState[x][y] = player;
-//        System.out.println(x+ " "+ y);
 
         if (x!=0 && gameState[x-1][y] == enemy){
             tempState[x-1][y] = player;
@@ -52,10 +51,9 @@ abstract class Bot {
 
     protected float objectiveFunction(String[][] gameState, String player){
         float val = 0;
-        String[][] tempState = gameState;
         for (int i=0; i<8; i++) {
             for (int j=0; j<8; j++) {
-                val += k(tempState[i][j], player)*a(tempState[i][j], getNeighbors(tempState, i, j), player);
+                val += k(gameState[i][j], player)*a(gameState[i][j], getNeighbors(gameState, i, j), player);
             }
         }
         return val;
