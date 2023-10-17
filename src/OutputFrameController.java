@@ -79,6 +79,8 @@ public class OutputFrameController {
         // Start bot
         if (botAlgorithm == "Local Search"){
             this.bot = new LocalSearchBot("O");
+        } else if (botAlgorithm == "Genetic Algorithm"){
+            this.bot = new GeneticAlgorithmBot("O");
         } else {
             this.bot = new MiniMaxBot("O");
         }
