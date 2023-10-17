@@ -135,7 +135,7 @@ class GeneticAlgorithmBot extends Bot{
         float val = 0;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                val += (tempState[i][j] == "O" ? 1 : -1);
+                val += (tempState[i][j] == "O" ? 1 : tempState[i][j] == "X" ? -1 : 0);
             }
         }
         return val;
