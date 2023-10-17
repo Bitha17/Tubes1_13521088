@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
@@ -41,11 +40,12 @@ class GeneticAlgorithmBot extends Bot{
                 }
             } 
         }
+        System.out.println(current[0] + " " + current[1]);
         return current;
     }
 
     private int[][][] crossOver(int[][] state1, int[][] state2) {
-        int length = 2 * roundsLeft;
+        int length = state1.length;
         
         int[][] newState1 = new int[length][];
         int[][] newState2 = new int[length][];
@@ -71,6 +71,7 @@ class GeneticAlgorithmBot extends Bot{
     }
 
     private int[][][] initializePopulation(String[][] gameState, int roundsLeft) {
+        roundsLeft = roundsLeft >= 6 ? 6 : roundsLeft;
         int lengthState = roundsLeft * 2;
         int[][][] population = new int[POPULATION_SIZE][lengthState][2];
         int boardSize = 8;
