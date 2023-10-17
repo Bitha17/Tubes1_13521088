@@ -6,7 +6,7 @@ public class MiniMaxBot extends Bot{
     }
     @Override
     public int[] move(String[][] gameState, int roundsLeft) {
-        System.out.println("minimax");
+//        System.out.println("minimax");
         this.gameState = gameState;
         this.roundsLeft = roundsLeft;
         return miniMax();
@@ -23,7 +23,11 @@ public class MiniMaxBot extends Bot{
         int[][] actions = getActions(this.gameState);
         bestAction = actions[0];
         for (int i = 0; i < actions.length; i++) {
-            if(System.nanoTime() - startTime >= TIMEOUT) return bestAction;
+//            System.out.println("action " + actions[i][0] + " " + actions[i][1]);
+            if(System.nanoTime() - startTime >= TIMEOUT){
+//                System.out.println("timeout " + bestAction[0] + " " + bestAction[1]);
+                return bestAction;
+            }
             String[][] result = result(this.gameState, actions[i], player);
             float value = minValue(result, alpha, beta);
             if (value > bestValue) {
@@ -32,12 +36,14 @@ public class MiniMaxBot extends Bot{
             }
             alpha = Math.max(alpha, value);
         }
-        System.out.println(bestAction[0] + " " + bestAction[1]);
+//        System.out.println(bestAction[0] + " " + bestAction[1]);
+//        System.out.println("best val: " + bestValue);
         return bestAction;
     }
 
     private float maxValue(String[][] gameState, float alpha, float beta) {
         if (isTerminal(gameState)) {
+//            System.out.println("max Val: " + objectiveFunction(gameState, player));
             return objectiveFunction(gameState, player);
         }
         roundsLeft--;
@@ -50,11 +56,13 @@ public class MiniMaxBot extends Bot{
             }
             alpha = Math.max(alpha, value);
         }
+//        System.out.println("max Val: " + value);
         return value;
     }
 
     private float minValue(String[][] gameState, float alpha, float beta) {
         if (isTerminal(gameState)) {
+//            System.out.println("min Val: " + objectiveFunction(gameState, player));
             return objectiveFunction(gameState, player);
         }
         roundsLeft--;
@@ -67,6 +75,7 @@ public class MiniMaxBot extends Bot{
             }
             beta = Math.min(beta, value);
         }
+//        System.out.println("min Val: " + value);
         return value;
     }
 
@@ -81,7 +90,8 @@ public class MiniMaxBot extends Bot{
                 .toArray(int[][]::new);
     }
 
-    private String[][] result(String[][] gameState, int[] action, String player) {
+    private String[][] result(String[][] gameState, int[] action, String p) {
+        String e = p == "X"? "O":"X";
         String[][] newState = new String[8][8];
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
@@ -90,18 +100,18 @@ public class MiniMaxBot extends Bot{
         }
         int x = action[0];
         int y = action[1];
-        newState[x][y] = player;
-        if (x!=0 && gameState[x-1][y].equals(enemy)){
-            newState[x-1][y] = player;
+        newState[x][y] = p;
+        if (x!=0 && gameState[x-1][y].equals(e)){
+            newState[x-1][y] = p;
         }
-        if (x!=7 && gameState[x+1][y].equals(enemy)){
-            newState[x+1][y] = player;
+        if (x!=7 && gameState[x+1][y].equals(e)){
+            newState[x+1][y] = p;
         }
-        if (y!=0 && gameState[x][y-1].equals(enemy)){
-            newState[x][y-1] = player;
+        if (y!=0 && gameState[x][y-1].equals(e)){
+            newState[x][y-1] = p;
         }
-        if (y!=7 && gameState[x][y+1].equals(enemy)){
-            newState[x][y+1] = player;
+        if (y!=7 && gameState[x][y+1].equals(e)){
+            newState[x][y+1] = p;
         }
         return newState;
     }
