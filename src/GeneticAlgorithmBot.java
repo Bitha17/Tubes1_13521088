@@ -1,4 +1,10 @@
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 class GeneticAlgorithmBot extends Bot{
+    private final int POPULATION_SIZE = 100;
+    
     @Override
     public int[] move(String[][] gameState, int roundsLeft) {
         this.gameState = gameState;
@@ -14,6 +20,38 @@ class GeneticAlgorithmBot extends Bot{
         }
         return new int[]{};
     }
+
+    private int[][] initializePopulation(String[][] gameState, int roundsLeft) {
+        int[][] population = new int[roundsLeft * 4][2];
+        int boardSize = 8;
+    
+        Set<String> usedCoordinates = new HashSet<>();
+        for (int i = 0; i < gameState.length; i++) {
+            for (int j = 0; j < gameState[i].length; j++) {
+                if (gameState[i][j].equals("X") || gameState[i][j].equals("O")) {
+                    usedCoordinates.add(i + "," + j);
+                }
+            }
+        }
+        
+        Set<String> prohibitedCoordinates = new HashSet<>(Arrays.asList("0,6", "0,7", "1,6", "1,7", "6,0", "6,1", "7,0", "7,1"));
+    
+        for (int i = 0; i < roundsLeft * 4; i++) {
+            int x, y;
+            String coordinate;
+            do {
+                x = (int) (Math.random() * boardSize);
+                y = (int) (Math.random() * boardSize);
+                coordinate = x + "," + y;
+            } while (usedCoordinates.contains(coordinate) || prohibitedCoordinates.contains(coordinate));
+    
+            usedCoordinates.add(coordinate);
+            population[i][0] = x;
+            population[i][1] = y;
+        }
+        return population;
+    }
+    
 
     private float fitnessFunction(int[][] actions){
         String[][] tempState = new String[8][8];
