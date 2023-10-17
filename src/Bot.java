@@ -36,9 +36,9 @@ abstract class Bot {
         return val;
     }
 
-    protected float objectiveFunction(String player){
+    protected float objectiveFunction(String[][] gameState, String player){
         float val = 0;
-        String[][] tempState = this.gameState;
+        String[][] tempState = gameState;
         for (int i=0; i<8; i++) {
             for (int j=0; j<8; j++) {
                 val += k(tempState[i][j], player)*a(tempState[i][j], getNeighbors(tempState, i, j), player);
