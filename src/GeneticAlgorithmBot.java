@@ -1,20 +1,64 @@
+import java.util.Arrays;
+import java.util.Random;
+
 class GeneticAlgorithmBot extends Bot{
     @Override
     public int[] move(String[][] gameState, int roundsLeft) {
         this.gameState = gameState;
         this.roundsLeft = roundsLeft;
-        return GeneticAlgorithm();
+        return geneticAlgorithm();
     }
 
     private long TIMEOUT = 5 * 1000000000;
-    private int[] GeneticAlgorithm(){
+    private int fitVal = 5;
+    private int[] geneticAlgorithm(){
+        int[][][] population = initialPopulation();
         long startTime = System.nanoTime();
-        while (System.nanoTime() - startTime < TIMEOUT){
-             
+        int[] current = new int[2];
+        current = population[0][0];
+        float bestVal = fitnessFunction(population[0]);
+        while (bestVal < fitVal && System.nanoTime() - startTime < TIMEOUT){
+            for (int[][] actions : population) {
+                if (fitnessFunction(actions) > bestVal) {
+                    bestVal = fitnessFunction(actions);
+                    current = actions[0];
+                }
+            } 
         }
-        return new int[]{};
+        return current;
     }
 
+    private int[][][] initialPopulation(){
+        return new int[][][]{};
+    }
+
+    private int[][][] crossOver(int[][] state1, int[][] state2) {
+        int length = 2 * roundsLeft;
+        
+        int[][] newState1 = new int[length][];
+        int[][] newState2 = new int[length][];
+
+        // Perform the crossover by swapping parts of the states
+        int crossoverPoint = new Random().nextInt(length - 1) + 1; // Choose a random crossover point
+
+        for (int i = 0; i < length; i++) {
+            if (i < crossoverPoint) {
+                newState1[i] = Arrays.copyOf(state1[i], state1[i].length);
+                newState2[i] = Arrays.copyOf(state2[i], state2[i].length);
+            } else {
+                newState1[i] = Arrays.copyOf(state2[i], state2[i].length);
+                newState2[i] = Arrays.copyOf(state1[i], state1[i].length);
+            }
+        }
+
+        int[][][] result = new int[2][][];
+        result[0] = newState1;
+        result[1] = newState2;
+
+        return result;
+    }
+
+    
     private float fitnessFunction(int[][] actions){
         String[][] tempState = new String[8][8];
         for (int i = 0; i < 8; i++) {
