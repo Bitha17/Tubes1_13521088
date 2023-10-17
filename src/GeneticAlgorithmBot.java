@@ -4,7 +4,7 @@ import java.util.Random;
 import java.util.Set;
 
 class GeneticAlgorithmBot extends Bot{
-    private final int POPULATION_SIZE = 100;
+    private final int POPULATION_SIZE = 20;
 
     public GeneticAlgorithmBot(String player) {
         super(player);
@@ -95,6 +95,86 @@ class GeneticAlgorithmBot extends Bot{
         }
     
         return population;
+    }
+
+    private int[][][] selection(int[][][] population) {
+        float[] probabilities = new float[population.length];
+        float sumFitness = 0;
+
+        for (int i = 0; i < population.length; i++) {
+            probabilities[i] = fitnessFunction(population[i]);
+            sumFitness += probabilities[i];
+        }
+
+        for (int i = 0; i < probabilities.length; i++) {
+            probabilities[i] /= sumFitness;
+        }
+
+        Arrays.sort(population, (a, b) -> Float.compare(fitnessFunction(b), fitnessFunction(a)));
+
+        int selectedCount = 0;
+        int index = 0;
+        Random random = new Random();
+        int randomValue = random.nextInt(101);
+
+        int[][][] selectedPopulation = new int[population.length][population[0].length][2];
+        
+        //check the order probability?
+        for (int i = 0; i < population.length; i++) {
+            if (randomValue >= selectedCount && randomValue < selectedCount + probabilities[i] * 100) {
+                selectedPopulation[index] = population[i];
+                index++;
+            }
+            selectedCount += probabilities[i] * 100;
+        }
+
+        return Arrays.copyOf(selectedPopulation, population.length);
+    }
+
+    private int[][][] mutatePopulation(int[][][] population) {
+        int[][][] mutatedPopulation = new int[population.length][][];
+        Random random = new Random();
+
+        Set<String> usedCoordinates = new HashSet<>();
+        for (int i = 0; i < gameState.length; i++) {
+            for (int j = 0; j < gameState[i].length; j++) {
+                if (gameState[i][j].equals("X") || gameState[i][j].equals("O")) {
+                    usedCoordinates.add(i + "," + j);
+                }
+            }
+        }
+
+        Set<String> prohibitedCoordinates = new HashSet<>(Arrays.asList("0,6", "0,7", "1,6", "1,7", "6,0", "6,1", "7,0", "7,1"));
+
+        for (int i = 0; i < population.length; i++) {
+            int[][] currentState = population[i];
+            int mutationIndex = random.nextInt(currentState.length);
+
+            int[][] newState = new int[currentState.length][2];
+            for (int j = 0; j < currentState.length; j++) {
+                if (j == mutationIndex) {
+                    // if the index is mutated
+                    int newX, newY;
+                    String coordinate;
+                    do {
+                        newX = random.nextInt(8);
+                        newY = random.nextInt(8);
+                        coordinate = newX + "," + newY;
+                    } while (usedCoordinates.contains(coordinate) || prohibitedCoordinates.contains(coordinate));
+                    usedCoordinates.add(coordinate);
+                    newState[j][0] = newX;
+                    newState[j][1] = newY;
+                } else {
+                    // the other state that not mutated
+                    newState[j][0] = currentState[j][0];
+                    newState[j][1] = currentState[j][1];
+                }
+            }
+
+            mutatedPopulation[i] = newState;
+        }
+
+        return mutatedPopulation;
     }
 
     
