@@ -12,7 +12,14 @@ abstract class Bot {
         String enemy = player == "X"? "O" : "X";
         int x = addedMark[0];
         int y = addedMark[1];
-        String[][] tempState = gameState;
+        String[][] tempState = new String[8][8];
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                tempState[i][j] = gameState[i][j];
+            }
+        }
+        tempState[x][y] = player;
+//        System.out.println(x+ " "+ y);
 
         if (x!=0 && gameState[x-1][y] == enemy){
             tempState[x-1][y] = player;

@@ -27,6 +27,7 @@ public class MiniMaxBot extends Bot{
             }
             alpha = Math.max(alpha, value);
         }
+        System.out.println(bestAction);
         return bestAction;
     }
 
@@ -71,7 +72,7 @@ public class MiniMaxBot extends Bot{
         int i = 0;
         for (int x = 0; x < 8; x++){
             for (int y = 0; y < 8; y++) {
-                if (gameState[x][y] == "") {
+                if (gameState[x][y].equals("")) {
                     actions[i][0] = x;
                     actions[i][1] = y;
                     i++;
@@ -83,14 +84,26 @@ public class MiniMaxBot extends Bot{
 
     private String[][] result(String[][] gameState, int[] action, String player) {
         String[][] newState = new String[8][8];
-
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
                 newState[x][y] = gameState[x][y];
             }
         }
-
-        newState[action[0]][action[1]] = player;
+        int x = action[0];
+        int y = action[1];
+        newState[x][y] = player;
+        if (x!=0 && gameState[x-1][y] == enemy){
+            newState[x-1][y] = player;
+        }
+        if (x!=7 && gameState[x+1][y] == enemy){
+            newState[x+1][y] = player;
+        }
+        if (y!=0 && gameState[x][y-1] == enemy){
+            newState[x][y-1] = player;
+        }
+        if (y!=7 && gameState[x][y+1] == enemy){
+            newState[x][y+1] = player;
+        }
         return newState;
     }
 
