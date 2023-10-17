@@ -1,7 +1,11 @@
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 class GeneticAlgorithmBot extends Bot{
+    private final int POPULATION_SIZE = 100;
+
     public GeneticAlgorithmBot(String player) {
         super(player);
     }
@@ -16,7 +20,7 @@ class GeneticAlgorithmBot extends Bot{
     private long TIMEOUT = 5 * 1000000000;
     private int fitVal = 5;
     private int[] geneticAlgorithm(){
-        int[][][] population = initialPopulation();
+        int[][][] population = initializePopulation(gameState, roundsLeft);
         long startTime = System.nanoTime();
         int[] current = new int[2];
         current = population[0][0];
@@ -30,10 +34,6 @@ class GeneticAlgorithmBot extends Bot{
             } 
         }
         return current;
-    }
-
-    private int[][][] initialPopulation(){
-        return new int[][][]{};
     }
 
     private int[][][] crossOver(int[][] state1, int[][] state2) {
@@ -60,6 +60,41 @@ class GeneticAlgorithmBot extends Bot{
         result[1] = newState2;
 
         return result;
+    }
+
+    private int[][][] initializePopulation(String[][] gameState, int roundsLeft) {
+        int lengthState = roundsLeft * 2;
+        int[][][] population = new int[POPULATION_SIZE][lengthState][2];
+        int boardSize = 8;
+    
+        Set<String> usedCoordinates = new HashSet<>();
+        for (int i = 0; i < gameState.length; i++) {
+            for (int j = 0; j < gameState[i].length; j++) {
+                if (gameState[i][j].equals("X") || gameState[i][j].equals("O")) {
+                    usedCoordinates.add(i + "," + j);
+                }
+            }
+        }
+    
+        Set<String> prohibitedCoordinates = new HashSet<>(Arrays.asList("0,6", "0,7", "1,6", "1,7", "6,0", "6,1", "7,0", "7,1"));
+    
+        for (int k = 0; k < POPULATION_SIZE; k++) {
+            for (int i = 0; i < lengthState; i++) {
+                int x, y;
+                String coordinate;
+                do {
+                    x = (int) (Math.random() * boardSize);
+                    y = (int) (Math.random() * boardSize);
+                    coordinate = x + "," + y;
+                } while (usedCoordinates.contains(coordinate) || prohibitedCoordinates.contains(coordinate));
+    
+                usedCoordinates.add(coordinate);
+                population[k][i][0] = x;
+                population[k][i][1] = y;
+            }
+        }
+    
+        return population;
     }
 
     
