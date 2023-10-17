@@ -124,7 +124,7 @@ class GeneticAlgorithmBot extends Bot{
             if (randomValue >= selectedCount && randomValue < selectedCount + probabilities[i] * 100) {
                 selectedPopulation[index] = population[i];
                 index++;
-            }
+            } 
             selectedCount += probabilities[i] * 100;
         }
 
