@@ -20,8 +20,8 @@ public class MiniMaxBot extends Bot{
         roundsLeft--;
         int[][] actions = getActions(this.gameState);
         bestAction = actions[0];
-        for (int i = 1; i < actions.length; i++) {
-            System.out.println(actions[i][0] + "" + actions[i][1]);
+        for (int i = 0; i < actions.length; i++) {
+            System.out.println(actions[i][0] + " " + actions[i][1]);
             String[][] result = result(this.gameState, actions[i], player);
             float value = minValue(result, alpha, beta);
             if (value > bestValue) {
