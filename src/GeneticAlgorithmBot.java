@@ -2,6 +2,10 @@ import java.util.Arrays;
 import java.util.Random;
 
 class GeneticAlgorithmBot extends Bot{
+    public GeneticAlgorithmBot(String player) {
+        super(player);
+    }
+
     @Override
     public int[] move(String[][] gameState, int roundsLeft) {
         this.gameState = gameState;

@@ -1,4 +1,8 @@
 class LocalSearchBot extends Bot{
+    public LocalSearchBot(String player) {
+        super(player);
+    }
+
     @Override
     public int[] move(String[][] gameState, int roundsLeft) {
         this.gameState = gameState;

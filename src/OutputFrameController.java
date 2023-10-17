@@ -78,9 +78,9 @@ public class OutputFrameController {
 
         // Start bot
         if (botAlgorithm == "Local Search"){
-            this.bot = new LocalSearchBot();
+            this.bot = new LocalSearchBot("O");
         } else {
-            this.bot = new MiniMaxBot();
+            this.bot = new MiniMaxBot("O");
         }
         this.playerXTurn = !isBotFirst;
         if (this.isBotFirst) {

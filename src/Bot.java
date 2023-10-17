@@ -1,6 +1,13 @@
 abstract class Bot {
+    protected String player;
+    protected String enemy;
     protected String[][] gameState;
     protected int roundsLeft;
+
+    public Bot(String player){
+        this.player = player;
+        this.enemy = player == "X"? "O":"X";
+    }
     protected abstract int[] move(String[][] gameState, int roundsLeft);
 
     protected float objectiveFunction(int[] addedMark){
