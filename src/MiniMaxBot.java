@@ -12,7 +12,9 @@ public class MiniMaxBot extends Bot{
         return miniMax();
     }
 
+    private long TIMEOUT = 5 * 1000000000;
     private int[] miniMax() {
+        long startTime = System.nanoTime();
         int[] bestAction;
         float bestValue = Float.NEGATIVE_INFINITY;
         float alpha = Float.NEGATIVE_INFINITY;
@@ -21,6 +23,7 @@ public class MiniMaxBot extends Bot{
         int[][] actions = getActions(this.gameState);
         bestAction = actions[0];
         for (int i = 0; i < actions.length; i++) {
+            if(System.nanoTime() - startTime >= TIMEOUT) return bestAction;
             System.out.println(actions[i][0] + " " + actions[i][1]);
             String[][] result = result(this.gameState, actions[i], player);
             float value = minValue(result, alpha, beta);
