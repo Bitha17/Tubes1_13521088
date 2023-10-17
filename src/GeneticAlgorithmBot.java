@@ -4,7 +4,7 @@ import java.util.Random;
 import java.util.Set;
 
 class GeneticAlgorithmBot extends Bot{
-    private final int POPULATION_SIZE = 20;
+    private final int POPULATION_SIZE = 4;
 
     public GeneticAlgorithmBot(String player) {
         super(player);
@@ -25,7 +25,14 @@ class GeneticAlgorithmBot extends Bot{
         int[] current = new int[2];
         current = population[0][0];
         float bestVal = fitnessFunction(population[0]);
+        for (int[][] actions : population) {
+            if (fitnessFunction(actions) > bestVal) {
+                bestVal = fitnessFunction(actions);
+                current = actions[0];
+            }
+        } 
         while (bestVal < fitVal && System.nanoTime() - startTime < TIMEOUT){
+            population = Arrays.copyOf(mutatePopulation(reproducePopulation(selection(population))),population.length);
             for (int[][] actions : population) {
                 if (fitnessFunction(actions) > bestVal) {
                     bestVal = fitnessFunction(actions);
@@ -33,11 +40,12 @@ class GeneticAlgorithmBot extends Bot{
                 }
             } 
         }
+        System.out.println(current[0] + " " + current[1]);
         return current;
     }
 
     private int[][][] crossOver(int[][] state1, int[][] state2) {
-        int length = 2 * roundsLeft;
+        int length = state1.length;
         
         int[][] newState1 = new int[length][];
         int[][] newState2 = new int[length][];
@@ -63,6 +71,7 @@ class GeneticAlgorithmBot extends Bot{
     }
 
     private int[][][] initializePopulation(String[][] gameState, int roundsLeft) {
+        roundsLeft = roundsLeft >= 6 ? 6 : roundsLeft;
         int lengthState = roundsLeft * 2;
         int[][][] population = new int[POPULATION_SIZE][lengthState][2];
         int boardSize = 8;
@@ -177,7 +186,27 @@ class GeneticAlgorithmBot extends Bot{
         return mutatedPopulation;
     }
 
-    
+    private int[][][] reproducePopulation(int[][][] selectedPopulation) {
+        int[][][] offspringPopulation = new int[selectedPopulation.length][selectedPopulation[0].length][2];
+        
+        for (int i = 0; i < selectedPopulation.length; i += 2) {
+            if (i + 1 < selectedPopulation.length) {
+                // Get two parents from the selected population
+                int[][] parent1 = selectedPopulation[i];
+                int[][] parent2 = selectedPopulation[i + 1];
+                
+                // Apply crossover to create two children
+                int[][][] children = crossOver(parent1, parent2);
+                
+                // Add the children to the offspring population
+                offspringPopulation[i] = children[0];
+                offspringPopulation[i + 1] = children[1];
+            }
+        }
+        
+        return offspringPopulation;
+    }    
+
     private float fitnessFunction(int[][] actions){
         String[][] tempState = new String[8][8];
         for (int i = 0; i < 8; i++) {
@@ -215,7 +244,7 @@ class GeneticAlgorithmBot extends Bot{
         float val = 0;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                val += (tempState[i][j] == "O" ? 1 : -1);
+                val += (tempState[i][j] == "O" ? 1 : tempState[i][j] == "X" ? -1 : 0);
             }
         }
         return val;
