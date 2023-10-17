@@ -1,3 +1,5 @@
+import java.util.stream.IntStream;
+
 public class MiniMaxBot extends Bot{
     private String player;
     private String enemy;
@@ -11,29 +13,29 @@ public class MiniMaxBot extends Bot{
     }
 
     private int[] miniMax() {
-        int[] bestAction = {0,0};
+        int[] bestAction;
         float bestValue = Float.NEGATIVE_INFINITY;
         float alpha = Float.NEGATIVE_INFINITY;
         float beta = Float.POSITIVE_INFINITY;
         roundsLeft--;
-        for (int[] action : getActions(this.gameState)) {
-            String[][] result = result(this.gameState, action, player);
+        int[][] actions = getActions(this.gameState);
+        bestAction = actions[0];
+        for (int i = 1; i < actions.length; i++) {
+            System.out.println(actions[i][0] + "" + actions[i][1]);
+            String[][] result = result(this.gameState, actions[i], player);
             float value = minValue(result, alpha, beta);
-//            System.out.println("value");
-//            System.out.println(value);
             if (value > bestValue) {
                 bestValue = value;
-                bestAction = action;
+                bestAction = actions[i];
             }
             alpha = Math.max(alpha, value);
         }
-        System.out.println(bestAction);
+        System.out.println(bestAction[0] + " " + bestAction[1]);
         return bestAction;
     }
 
     private float maxValue(String[][] gameState, float alpha, float beta) {
         if (isTerminal(gameState)) {
-//            System.out.println(objectiveFunction(gameState, player));
             return objectiveFunction(gameState, player);
         }
         roundsLeft--;
@@ -51,7 +53,6 @@ public class MiniMaxBot extends Bot{
 
     private float minValue(String[][] gameState, float alpha, float beta) {
         if (isTerminal(gameState)) {
-//            System.out.println(objectiveFunction(gameState, player));
             return objectiveFunction(gameState, player);
         }
         roundsLeft--;
@@ -67,19 +68,15 @@ public class MiniMaxBot extends Bot{
         return value;
     }
 
-    private int[][] getActions(String[][] gameState){
-        int[][] actions = new int[64][2];
-        int i = 0;
-        for (int x = 0; x < 8; x++){
-            for (int y = 0; y < 8; y++) {
-                if (gameState[x][y].equals("")) {
-                    actions[i][0] = x;
-                    actions[i][1] = y;
-                    i++;
-                }
-            }
-        }
-        return actions;
+
+    private int[][] getActions(String[][] gameState) {
+        return IntStream.range(0, 8)
+                .boxed()
+                .flatMap(x -> IntStream.range(0, 8)
+                        .filter(y -> gameState[x][y].equals(""))
+                        .mapToObj(y -> new int[]{x, y})
+                )
+                .toArray(int[][]::new);
     }
 
     private String[][] result(String[][] gameState, int[] action, String player) {
@@ -92,16 +89,16 @@ public class MiniMaxBot extends Bot{
         int x = action[0];
         int y = action[1];
         newState[x][y] = player;
-        if (x!=0 && gameState[x-1][y] == enemy){
+        if (x!=0 && gameState[x-1][y].equals(enemy)){
             newState[x-1][y] = player;
         }
-        if (x!=7 && gameState[x+1][y] == enemy){
+        if (x!=7 && gameState[x+1][y].equals(enemy)){
             newState[x+1][y] = player;
         }
-        if (y!=0 && gameState[x][y-1] == enemy){
+        if (y!=0 && gameState[x][y-1].equals(enemy)){
             newState[x][y-1] = player;
         }
-        if (y!=7 && gameState[x][y+1] == enemy){
+        if (y!=7 && gameState[x][y+1].equals(enemy)){
             newState[x][y+1] = player;
         }
         return newState;
@@ -116,7 +113,7 @@ public class MiniMaxBot extends Bot{
             int countEmpty = 0;
             for (int x = 0; x < 8; x++){
                 for (int y = 0; y < 8; y++) {
-                    if (gameState[x][y] == "") {
+                    if (gameState[x][y].equals("")) {
                         countEmpty++;
                     }
                 }
