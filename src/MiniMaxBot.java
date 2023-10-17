@@ -1,6 +1,9 @@
 import java.util.stream.IntStream;
 
 public class MiniMaxBot extends Bot{
+    private long startTime;
+    private long TIMEOUT = 5 * 1000000000;
+
     public MiniMaxBot(String player) {
         super(player);
     }
@@ -9,17 +12,17 @@ public class MiniMaxBot extends Bot{
 //        System.out.println("minimax");
         this.gameState = gameState;
         this.roundsLeft = roundsLeft;
+//        System.out.println(roundsLeft);
+        this.startTime = System.nanoTime();
         return miniMax();
     }
 
-    private long TIMEOUT = 5 * 1000000000;
     private int[] miniMax() {
         long startTime = System.nanoTime();
         int[] bestAction;
         float bestValue = Float.NEGATIVE_INFINITY;
         float alpha = Float.NEGATIVE_INFINITY;
         float beta = Float.POSITIVE_INFINITY;
-        roundsLeft--;
         int[][] actions = getActions(this.gameState);
         bestAction = actions[0];
         for (int i = 0; i < actions.length; i++) {
@@ -29,7 +32,14 @@ public class MiniMaxBot extends Bot{
                 return bestAction;
             }
             String[][] result = result(this.gameState, actions[i], player);
-            float value = minValue(result, alpha, beta);
+//            System.out.println("result");
+//            for (int a = 0; a < 8; a++) {
+//                for (int b = 0; b < 8; b++) {
+//                    System.out.print(result[a][b] + "\t"); // Assuming you want a tab separator
+//                }
+//                System.out.println(); // Move to the next line after each row
+//            }
+            float value = minValue(result, alpha, beta, roundsLeft - 1);
             if (value > bestValue) {
                 bestValue = value;
                 bestAction = actions[i];
@@ -41,16 +51,27 @@ public class MiniMaxBot extends Bot{
         return bestAction;
     }
 
-    private float maxValue(String[][] gameState, float alpha, float beta) {
-        if (isTerminal(gameState)) {
-//            System.out.println("max Val: " + objectiveFunction(gameState, player));
+    private float maxValue(String[][] gameState, float alpha, float beta, int roundsLeft) {
+
+//        System.out.println("max: "+ roundsLeft);
+        if (roundsLeft == 0) {
+//            System.out.println("max Val last: " + objectiveFunction(gameState, player));
             return objectiveFunction(gameState, player);
         }
-        roundsLeft--;
         float value = Float.NEGATIVE_INFINITY;
         for (int[] action : getActions(gameState)) {
+            if(System.nanoTime() - startTime >= TIMEOUT){
+//                System.out.println("timeout");
+                return value;
+            }
             String[][] result = result(gameState, action, player);
-            value = Math.max(value, minValue(result , alpha, beta));
+//            for (int a = 0; a < 8; a++) {
+//                for (int b = 0; b < 8; b++) {
+//                    System.out.print(result[a][b] + "\t"); // Assuming you want a tab separator
+//                }
+//                System.out.println(); // Move to the next line after each row
+//            }
+            value = Math.max(value, minValue(result , alpha, beta, roundsLeft - 1));
             if (value >= beta) {
                 return value;
             }
@@ -60,16 +81,26 @@ public class MiniMaxBot extends Bot{
         return value;
     }
 
-    private float minValue(String[][] gameState, float alpha, float beta) {
-        if (isTerminal(gameState)) {
-//            System.out.println("min Val: " + objectiveFunction(gameState, player));
+    private float minValue(String[][] gameState, float alpha, float beta, int roundsLeft) {
+        System.out.println("min: "+ roundsLeft);
+        if (roundsLeft == 0) {
+//            System.out.println("min Val last: " + objectiveFunction(gameState, player));
             return objectiveFunction(gameState, player);
         }
-        roundsLeft--;
         float value = Float.POSITIVE_INFINITY;
         for (int[] action : getActions(gameState)) {
+            if(System.nanoTime() - startTime >= TIMEOUT){
+//                System.out.println("timeout");
+                return value;
+            }
             String[][] result = result(gameState, action, enemy);
-            value = Math.min(value, maxValue(result, alpha, beta));
+//            for (int a = 0; a < 8; a++) {
+//                for (int b = 0; b < 8; b++) {
+//                    System.out.print(result[a][b] + "\t"); // Assuming you want a tab separator
+//                }
+//                System.out.println(); // Move to the next line after each row
+//            }
+            value = Math.min(value, maxValue(result, alpha, beta, roundsLeft - 1));
             if (value <= alpha) {
                 return value;
             }
@@ -114,23 +145,5 @@ public class MiniMaxBot extends Bot{
             newState[x][y+1] = p;
         }
         return newState;
-    }
-
-
-    private boolean isTerminal(String[][] gameState){
-        if (roundsLeft == 0) {
-            return true;
-        }
-        else{
-            int countEmpty = 0;
-            for (int x = 0; x < 8; x++){
-                for (int y = 0; y < 8; y++) {
-                    if (gameState[x][y].equals("")) {
-                        countEmpty++;
-                    }
-                }
-            }
-            return countEmpty == 0;
-        }
     }
 }
