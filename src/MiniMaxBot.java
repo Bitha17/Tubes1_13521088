@@ -1,13 +1,12 @@
 import java.util.stream.IntStream;
 
 public class MiniMaxBot extends Bot{
-    private String player;
-    private String enemy;
+    public MiniMaxBot(String player) {
+        super(player);
+    }
     @Override
     public int[] move(String[][] gameState, int roundsLeft) {
         this.gameState = gameState;
-        this.player = "O";
-        this.enemy = player == "X"? "O" : "X";
         this.roundsLeft = roundsLeft;
         return miniMax();
     }
