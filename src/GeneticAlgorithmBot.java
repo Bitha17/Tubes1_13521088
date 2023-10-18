@@ -18,7 +18,7 @@ class GeneticAlgorithmBot extends Bot{
     }
 
     private long TIMEOUT = 5 * 1000000000;
-    private int fitVal = 5;
+    private int fitVal = 40;
     private int[] geneticAlgorithm(){
         int[][][] population = initializePopulation(gameState, roundsLeft);
         // printPopulation(population);
@@ -259,7 +259,7 @@ class GeneticAlgorithmBot extends Bot{
             }
             n++;
         }
-        float val = 0;
+        float val = 32;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 val += (tempState[i][j] == "O" ? 1 : tempState[i][j] == "X" ? -1 : 0);

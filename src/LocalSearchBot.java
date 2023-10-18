@@ -5,6 +5,7 @@ class LocalSearchBot extends Bot{
 
     @Override
     public int[] move(String[][] gameState, int roundsLeft) {
+//        System.out.println("local search");
         this.gameState = gameState;
         return localSearch();
     }
@@ -21,6 +22,7 @@ class LocalSearchBot extends Bot{
              }
              nMax++;
          }
+//        System.out.println(current[0] + " " + current[1]);
         return current;
     }
 

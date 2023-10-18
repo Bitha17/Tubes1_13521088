@@ -1,50 +1,47 @@
 import java.util.stream.IntStream;
 
 public class MiniMaxBot extends Bot{
+    private long startTime;
+    private long TIMEOUT = 5 * 1000000000;
+
     public MiniMaxBot(String player) {
         super(player);
     }
     @Override
     public int[] move(String[][] gameState, int roundsLeft) {
-        System.out.println("minimax");
         this.gameState = gameState;
         this.roundsLeft = roundsLeft;
+        this.startTime = System.nanoTime();
         return miniMax();
     }
 
-    private long TIMEOUT = 5 * 1000000000;
     private int[] miniMax() {
-        long startTime = System.nanoTime();
         int[] bestAction;
         float bestValue = Float.NEGATIVE_INFINITY;
         float alpha = Float.NEGATIVE_INFINITY;
         float beta = Float.POSITIVE_INFINITY;
-        roundsLeft--;
         int[][] actions = getActions(this.gameState);
         bestAction = actions[0];
         for (int i = 0; i < actions.length; i++) {
-            if(System.nanoTime() - startTime >= TIMEOUT) return bestAction;
             String[][] result = result(this.gameState, actions[i], player);
-            float value = minValue(result, alpha, beta);
+            float value = minValue(result, alpha, beta, roundsLeft - 1);
             if (value > bestValue) {
                 bestValue = value;
                 bestAction = actions[i];
             }
             alpha = Math.max(alpha, value);
         }
-        System.out.println(bestAction[0] + " " + bestAction[1]);
         return bestAction;
     }
 
-    private float maxValue(String[][] gameState, float alpha, float beta) {
-        if (isTerminal(gameState)) {
+    private float maxValue(String[][] gameState, float alpha, float beta, int roundsLeft) {
+        if (roundsLeft == 0 || System.nanoTime() - startTime >= TIMEOUT) {
             return objectiveFunction(gameState, player);
         }
-        roundsLeft--;
         float value = Float.NEGATIVE_INFINITY;
         for (int[] action : getActions(gameState)) {
             String[][] result = result(gameState, action, player);
-            value = Math.max(value, minValue(result , alpha, beta));
+            value = Math.max(value, minValue(result , alpha, beta, roundsLeft - 1));
             if (value >= beta) {
                 return value;
             }
@@ -53,15 +50,14 @@ public class MiniMaxBot extends Bot{
         return value;
     }
 
-    private float minValue(String[][] gameState, float alpha, float beta) {
-        if (isTerminal(gameState)) {
+    private float minValue(String[][] gameState, float alpha, float beta, int roundsLeft) {
+        if (roundsLeft == 0 || System.nanoTime() - startTime >= TIMEOUT) {
             return objectiveFunction(gameState, player);
         }
-        roundsLeft--;
         float value = Float.POSITIVE_INFINITY;
         for (int[] action : getActions(gameState)) {
             String[][] result = result(gameState, action, enemy);
-            value = Math.min(value, maxValue(result, alpha, beta));
+            value = Math.min(value, maxValue(result, alpha, beta, roundsLeft - 1));
             if (value <= alpha) {
                 return value;
             }
@@ -81,7 +77,8 @@ public class MiniMaxBot extends Bot{
                 .toArray(int[][]::new);
     }
 
-    private String[][] result(String[][] gameState, int[] action, String player) {
+    private String[][] result(String[][] gameState, int[] action, String p) {
+        String e = p == "X"? "O":"X";
         String[][] newState = new String[8][8];
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
@@ -90,37 +87,19 @@ public class MiniMaxBot extends Bot{
         }
         int x = action[0];
         int y = action[1];
-        newState[x][y] = player;
-        if (x!=0 && gameState[x-1][y].equals(enemy)){
-            newState[x-1][y] = player;
+        newState[x][y] = p;
+        if (x!=0 && gameState[x-1][y].equals(e)){
+            newState[x-1][y] = p;
         }
-        if (x!=7 && gameState[x+1][y].equals(enemy)){
-            newState[x+1][y] = player;
+        if (x!=7 && gameState[x+1][y].equals(e)){
+            newState[x+1][y] = p;
         }
-        if (y!=0 && gameState[x][y-1].equals(enemy)){
-            newState[x][y-1] = player;
+        if (y!=0 && gameState[x][y-1].equals(e)){
+            newState[x][y-1] = p;
         }
-        if (y!=7 && gameState[x][y+1].equals(enemy)){
-            newState[x][y+1] = player;
+        if (y!=7 && gameState[x][y+1].equals(e)){
+            newState[x][y+1] = p;
         }
         return newState;
-    }
-
-
-    private boolean isTerminal(String[][] gameState){
-        if (roundsLeft == 0) {
-            return true;
-        }
-        else{
-            int countEmpty = 0;
-            for (int x = 0; x < 8; x++){
-                for (int y = 0; y < 8; y++) {
-                    if (gameState[x][y].equals("")) {
-                        countEmpty++;
-                    }
-                }
-            }
-            return countEmpty == 0;
-        }
     }
 }
