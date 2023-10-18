@@ -40,7 +40,6 @@ class GeneticAlgorithmBot extends Bot{
                 }
             } 
         }
-        System.out.println(current[0] + " " + current[1]);
         return current;
     }
 
@@ -133,14 +132,10 @@ class GeneticAlgorithmBot extends Bot{
     // For debugging purposes
     private void printPopulation(int[][][] population) {
         for (int i = 0; i < population.length; i++) {
-            System.out.println("Population " + i + ":");
             for (int j = 0; j < population[i].length; j++) {
                 for (int k = 0; k < population[i][j].length; k++) {
-                    System.out.print(population[i][j][k] + ",");
                 }
-                System.out.print(" ");
             }
-            System.out.println();
         }
     }
     
