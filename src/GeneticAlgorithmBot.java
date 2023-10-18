@@ -138,21 +138,40 @@ class GeneticAlgorithmBot extends Bot{
 
         Arrays.sort(population, (a, b) -> Float.compare(fitnessFunction(b), fitnessFunction(a)));
 
-        int selectedCount = 0;
-        int index = 0;
-        Random random = new Random();
-        int randomValue = random.nextInt(101);
+        // int selectedCount = 0;
+        // int index = 0;
+        // Random random = new Random();
+        // int randomValue = random.nextInt(101);
 
         int[][][] selectedPopulation = new int[population.length][population[0].length][2];
         
         //check the order probability?
-        for (int i = 0; i < population.length; i++) {
-            if (randomValue >= selectedCount && randomValue < selectedCount + probabilities[i] * 100) {
-                selectedPopulation[index] = population[i];
-                index++;
-            } 
-            selectedCount += probabilities[i] * 100;
+        // for (int i = 0; i < population.length; i++) {
+        //     if (randomValue >= selectedCount && randomValue < selectedCount + probabilities[i] * 100) {
+        //         selectedPopulation[index] = population[i];
+        //         index++;
+        //     } 
+        //     selectedCount += probabilities[i] * 100;
+        // }
+
+        int index = 0;
+        // random value as much as tje population length
+        for (int i = 0; i < population.length; i++){
+            int selectedCount = 0;
+            Random random = new Random();
+            int randomValue = random.nextInt(101);
+            // each random value check the probability
+            for (int j = 0; j < probabilities.length; j++){
+                if(randomValue >= selectedCount && randomValue < selectedCount + probabilities[j] * 100){
+                    selectedPopulation[index] = population[j];
+                    index++;
+                    break;
+                } else {
+                    selectedCount += probabilities[j] * 100;
+                }
+            }
         }
+        
 
         return Arrays.copyOf(selectedPopulation, population.length);
     }
