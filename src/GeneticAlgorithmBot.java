@@ -21,6 +21,7 @@ class GeneticAlgorithmBot extends Bot{
     private int fitVal = 5;
     private int[] geneticAlgorithm(){
         int[][][] population = initializePopulation(gameState, roundsLeft);
+        // printPopulation(population);
         long startTime = System.nanoTime();
         int[] current = new int[2];
         current = population[0][0];
@@ -71,11 +72,6 @@ class GeneticAlgorithmBot extends Bot{
     }
 
     private int[][][] initializePopulation(String[][] gameState, int roundsLeft) {
-        roundsLeft = roundsLeft >= 6 ? 6 : roundsLeft;
-        int lengthState = roundsLeft * 2;
-        int[][][] population = new int[POPULATION_SIZE][lengthState][2];
-        int boardSize = 8;
-    
         Set<String> usedCoordinates = new HashSet<>();
         for (int i = 0; i < gameState.length; i++) {
             for (int j = 0; j < gameState[i].length; j++) {
@@ -84,27 +80,48 @@ class GeneticAlgorithmBot extends Bot{
                 }
             }
         }
-    
+        
+        int lengthState = usedCoordinates.size() % 2 == 0 ? roundsLeft * 2 : roundsLeft * 2 - 1;
+        int[][][] population = new int[POPULATION_SIZE][lengthState][2];
+        int boardSize = 8;
+        
         Set<String> prohibitedCoordinates = new HashSet<>(Arrays.asList("0,6", "0,7", "1,6", "1,7", "6,0", "6,1", "7,0", "7,1"));
-    
+        
         for (int k = 0; k < POPULATION_SIZE; k++) {
             for (int i = 0; i < lengthState; i++) {
                 int x, y;
                 String coordinate;
+                int []coor = {-1,-1};
                 do {
                     x = (int) (Math.random() * boardSize);
                     y = (int) (Math.random() * boardSize);
                     coordinate = x + "," + y;
-                } while (usedCoordinates.contains(coordinate) || prohibitedCoordinates.contains(coordinate));
-    
-                usedCoordinates.add(coordinate);
+                    coor[0] = x;
+                    coor[1] = y;
+                } while (usedCoordinates.contains(coordinate) || prohibitedCoordinates.contains(coordinate) || (Arrays.asList(population[k]).contains(coor)));
+                
+                // usedCoordinates.add(coordinate);
                 population[k][i][0] = x;
                 population[k][i][1] = y;
             }
         }
-    
+        
         return population;
     }
+
+    private void printPopulation(int[][][] population) {
+        for (int i = 0; i < population.length; i++) {
+            System.out.println("Population " + i + ":");
+            for (int j = 0; j < population[i].length; j++) {
+                for (int k = 0; k < population[i][j].length; k++) {
+                    System.out.print(population[i][j][k] + ",");
+                }
+                System.out.print(" ");
+            }
+            System.out.println();
+        }
+    }
+    
 
     private int[][][] selection(int[][][] population) {
         float[] probabilities = new float[population.length];
@@ -189,6 +206,7 @@ class GeneticAlgorithmBot extends Bot{
     private int[][][] reproducePopulation(int[][][] selectedPopulation) {
         int[][][] offspringPopulation = new int[selectedPopulation.length][selectedPopulation[0].length][2];
         
+        // printPopulation(selectedPopulation);
         for (int i = 0; i < selectedPopulation.length; i += 2) {
             if (i + 1 < selectedPopulation.length) {
                 // Get two parents from the selected population
