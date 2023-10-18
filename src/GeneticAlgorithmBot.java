@@ -21,7 +21,6 @@ class GeneticAlgorithmBot extends Bot{
     private int fitVal = 40;
     private int[] geneticAlgorithm(){
         int[][][] population = initializePopulation(gameState, roundsLeft);
-        // printPopulation(population);
         long startTime = System.nanoTime();
         int[] current = new int[2];
         current = population[0][0];
@@ -50,10 +49,10 @@ class GeneticAlgorithmBot extends Bot{
         
         int[][] newState1 = new int[length][];
         int[][] newState2 = new int[length][];
-
+    
         // Perform the crossover by swapping parts of the states
         int crossoverPoint = new Random().nextInt(length - 1) + 1; // Choose a random crossover point
-
+    
         for (int i = 0; i < length; i++) {
             if (i < crossoverPoint) {
                 newState1[i] = Arrays.copyOf(state1[i], state1[i].length);
@@ -63,14 +62,40 @@ class GeneticAlgorithmBot extends Bot{
                 newState2[i] = Arrays.copyOf(state1[i], state1[i].length);
             }
         }
-
+    
+        // Repair duplicate coordinates within each offspring
+        newState1 = repairDuplicateCoordinates(newState1);
+        newState2 = repairDuplicateCoordinates(newState2);
+    
         int[][][] result = new int[2][][];
         result[0] = newState1;
         result[1] = newState2;
-
+    
         return result;
     }
-
+    
+    private int[][] repairDuplicateCoordinates(int[][] state) {
+        Set<String> usedCoordinates = new HashSet<>();
+        for (int i = 0; i < gameState.length; i++) {
+            for (int j = 0; j < gameState[i].length; j++) {
+                if (gameState[i][j].equals("X") || gameState[i][j].equals("O")) {
+                    usedCoordinates.add(i + "," + j);
+                }
+            }
+        }
+        for (int i = 0; i < state.length; i++) {
+            String coordinate = state[i][0] + "," + state[i][1];
+            while (usedCoordinates.contains(coordinate)) {
+                // Regenerate the coordinate until it's unique
+                state[i][0] = new Random().nextInt(8);
+                state[i][1] = new Random().nextInt(8);
+                coordinate = state[i][0] + "," + state[i][1];
+            }
+            usedCoordinates.add(coordinate);
+        }
+        return state;
+    }
+    
     private int[][][] initializePopulation(String[][] gameState, int roundsLeft) {
         Set<String> usedCoordinates = new HashSet<>();
         for (int i = 0; i < gameState.length; i++) {
@@ -84,9 +109,7 @@ class GeneticAlgorithmBot extends Bot{
         int lengthState = usedCoordinates.size() % 2 == 0 ? roundsLeft * 2 : roundsLeft * 2 - 1;
         int[][][] population = new int[POPULATION_SIZE][lengthState][2];
         int boardSize = 8;
-        
-        Set<String> prohibitedCoordinates = new HashSet<>(Arrays.asList("0,6", "0,7", "1,6", "1,7", "6,0", "6,1", "7,0", "7,1"));
-        
+                
         for (int k = 0; k < POPULATION_SIZE; k++) {
             for (int i = 0; i < lengthState; i++) {
                 int x, y;
@@ -98,9 +121,7 @@ class GeneticAlgorithmBot extends Bot{
                     coordinate = x + "," + y;
                     coor[0] = x;
                     coor[1] = y;
-                } while (usedCoordinates.contains(coordinate) || prohibitedCoordinates.contains(coordinate) || (Arrays.asList(population[k]).contains(coor)));
-                
-                // usedCoordinates.add(coordinate);
+                } while (usedCoordinates.contains(coordinate) || (Arrays.asList(population[k]).contains(coor)));
                 population[k][i][0] = x;
                 population[k][i][1] = y;
             }
@@ -109,6 +130,7 @@ class GeneticAlgorithmBot extends Bot{
         return population;
     }
 
+    // For debugging purposes
     private void printPopulation(int[][][] population) {
         for (int i = 0; i < population.length; i++) {
             System.out.println("Population " + i + ":");
@@ -138,22 +160,8 @@ class GeneticAlgorithmBot extends Bot{
 
         Arrays.sort(population, (a, b) -> Float.compare(fitnessFunction(b), fitnessFunction(a)));
 
-        // int selectedCount = 0;
-        // int index = 0;
-        // Random random = new Random();
-        // int randomValue = random.nextInt(101);
-
         int[][][] selectedPopulation = new int[population.length][population[0].length][2];
         
-        //check the order probability?
-        // for (int i = 0; i < population.length; i++) {
-        //     if (randomValue >= selectedCount && randomValue < selectedCount + probabilities[i] * 100) {
-        //         selectedPopulation[index] = population[i];
-        //         index++;
-        //     } 
-        //     selectedCount += probabilities[i] * 100;
-        // }
-
         int index = 0;
         // random value as much as tje population length
         for (int i = 0; i < population.length; i++){
@@ -172,7 +180,6 @@ class GeneticAlgorithmBot extends Bot{
             }
         }
         
-
         return Arrays.copyOf(selectedPopulation, population.length);
     }
 
@@ -189,8 +196,6 @@ class GeneticAlgorithmBot extends Bot{
             }
         }
 
-        Set<String> prohibitedCoordinates = new HashSet<>(Arrays.asList("0,6", "0,7", "1,6", "1,7", "6,0", "6,1", "7,0", "7,1"));
-
         for (int i = 0; i < population.length; i++) {
             int[][] currentState = population[i];
             int mutationIndex = random.nextInt(currentState.length);
@@ -201,12 +206,14 @@ class GeneticAlgorithmBot extends Bot{
                     // if the index is mutated
                     int newX, newY;
                     String coordinate;
+                    int[] coor = {-1,-1};
                     do {
                         newX = random.nextInt(8);
                         newY = random.nextInt(8);
                         coordinate = newX + "," + newY;
-                    } while (usedCoordinates.contains(coordinate) || prohibitedCoordinates.contains(coordinate));
-                    usedCoordinates.add(coordinate);
+                        coor[0] = newX;
+                        coor[1] = newY;
+                    } while (usedCoordinates.contains(coordinate) || (Arrays.asList(newState).contains(coor)));
                     newState[j][0] = newX;
                     newState[j][1] = newY;
                 } else {
@@ -225,20 +232,23 @@ class GeneticAlgorithmBot extends Bot{
     private int[][][] reproducePopulation(int[][][] selectedPopulation) {
         int[][][] offspringPopulation = new int[selectedPopulation.length][selectedPopulation[0].length][2];
         
-        // printPopulation(selectedPopulation);
-        for (int i = 0; i < selectedPopulation.length; i += 2) {
-            if (i + 1 < selectedPopulation.length) {
-                // Get two parents from the selected population
-                int[][] parent1 = selectedPopulation[i];
-                int[][] parent2 = selectedPopulation[i + 1];
-                
-                // Apply crossover to create two children
-                int[][][] children = crossOver(parent1, parent2);
-                
-                // Add the children to the offspring population
-                offspringPopulation[i] = children[0];
-                offspringPopulation[i + 1] = children[1];
+        if (selectedPopulation[0].length > 1) {
+            for (int i = 0; i < selectedPopulation.length; i += 2) {
+                if (i + 1 < selectedPopulation.length) {
+                    // Get two parents from the selected population
+                    int[][] parent1 = selectedPopulation[i];
+                    int[][] parent2 = selectedPopulation[i + 1];
+                    
+                    // Apply crossover to create two children
+                    int[][][] children = crossOver(parent1, parent2);
+                    
+                    // Add the children to the offspring population
+                    offspringPopulation[i] = children[0];
+                    offspringPopulation[i + 1] = children[1];
+                }
             }
+        } else {
+            offspringPopulation[0] = selectedPopulation[0];
         }
         
         return offspringPopulation;
