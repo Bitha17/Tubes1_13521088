@@ -9,16 +9,13 @@ public class MiniMaxBot extends Bot{
     }
     @Override
     public int[] move(String[][] gameState, int roundsLeft) {
-//        System.out.println("minimax");
         this.gameState = gameState;
         this.roundsLeft = roundsLeft;
-//        System.out.println(roundsLeft);
         this.startTime = System.nanoTime();
         return miniMax();
     }
 
     private int[] miniMax() {
-        startTime = System.nanoTime();
         int[] bestAction;
         float bestValue = Float.NEGATIVE_INFINITY;
         float alpha = Float.NEGATIVE_INFINITY;
@@ -26,19 +23,7 @@ public class MiniMaxBot extends Bot{
         int[][] actions = getActions(this.gameState);
         bestAction = actions[0];
         for (int i = 0; i < actions.length; i++) {
-//            System.out.println("action " + actions[i][0] + " " + actions[i][1]);
-//            if(System.nanoTime() - startTime >= TIMEOUT){
-//                System.out.println("timeout " + bestAction[0] + " " + bestAction[1]);
-//                return bestAction;
-//            }
             String[][] result = result(this.gameState, actions[i], player);
-            System.out.println("result");
-            for (int a = 0; a < 8; a++) {
-                for (int b = 0; b < 8; b++) {
-                    System.out.print(result[a][b] + "\t"); // Assuming you want a tab separator
-                }
-                System.out.println(); // Move to the next line after each row
-            }
             float value = minValue(result, alpha, beta, roundsLeft - 1);
             if (value > bestValue) {
                 bestValue = value;
@@ -46,59 +31,38 @@ public class MiniMaxBot extends Bot{
             }
             alpha = Math.max(alpha, value);
         }
-//        System.out.println(bestAction[0] + " " + bestAction[1]);
-//        System.out.println("best val: " + bestValue);
         return bestAction;
     }
 
     private float maxValue(String[][] gameState, float alpha, float beta, int roundsLeft) {
-
-//        System.out.println("max: "+ roundsLeft);
         if (roundsLeft == 0 || System.nanoTime() - startTime >= TIMEOUT) {
-//            System.out.println("max Val last: " + objectiveFunction(gameState, player));
             return objectiveFunction(gameState, player);
         }
         float value = Float.NEGATIVE_INFINITY;
         for (int[] action : getActions(gameState)) {
             String[][] result = result(gameState, action, player);
-//            for (int a = 0; a < 8; a++) {
-//                for (int b = 0; b < 8; b++) {
-//                    System.out.print(result[a][b] + "\t"); // Assuming you want a tab separator
-//                }
-//                System.out.println(); // Move to the next line after each row
-//            }
             value = Math.max(value, minValue(result , alpha, beta, roundsLeft - 1));
             if (value >= beta) {
                 return value;
             }
             alpha = Math.max(alpha, value);
         }
-//        System.out.println("max Val: " + value);
         return value;
     }
 
     private float minValue(String[][] gameState, float alpha, float beta, int roundsLeft) {
-//        System.out.println("min: "+ roundsLeft);
         if (roundsLeft == 0 || System.nanoTime() - startTime >= TIMEOUT) {
-//            System.out.println("min Val last: " + objectiveFunction(gameState, player));
             return objectiveFunction(gameState, player);
         }
         float value = Float.POSITIVE_INFINITY;
         for (int[] action : getActions(gameState)) {
             String[][] result = result(gameState, action, enemy);
-//            for (int a = 0; a < 8; a++) {
-//                for (int b = 0; b < 8; b++) {
-//                    System.out.print(result[a][b] + "\t"); // Assuming you want a tab separator
-//                }
-//                System.out.println(); // Move to the next line after each row
-//            }
             value = Math.min(value, maxValue(result, alpha, beta, roundsLeft - 1));
             if (value <= alpha) {
                 return value;
             }
             beta = Math.min(beta, value);
         }
-//        System.out.println("min Val: " + value);
         return value;
     }
 
